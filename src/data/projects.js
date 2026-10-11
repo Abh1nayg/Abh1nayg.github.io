@@ -17,16 +17,16 @@ export const projects = [
     stack: ['Python', 'pygame'],
     repo: 'https://github.com/Abh1nayg/newton',
     pitch: { x: 70, y: 72 },
-    cover: { colors: ['#0f3d2e', '#f5242eff'], label: 'NEW' },
+    cover: { colors: ['#3b0a0a', '#e63946'], label: 'NEW' },
   },
   {
     id: 'chess',
-    name: 'chess',
+    name: 'Chess',
     role: 'CM',
-    tagline: 'Implementation of chess in python created using pygame',
+    tagline: 'Python chess game with an interactive UI, Stockfish move suggestions, a best-move indicator, and PGN export.',
     stack: ['Python', 'pygame', 'AI', 'Stockfish'],
     repo: 'https://github.com/Abh1nayg/chess',
     pitch: { x: 30, y: 52 },
-    cover: { colors: ['#0f3d2e', '#f5a524'], label: 'CHE' },
+    cover: { colors: ['#0b0b0f', '#d9d9d9'], label: 'CHE' },
   }
 ]

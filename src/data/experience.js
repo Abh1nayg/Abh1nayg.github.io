@@ -1,0 +1,59 @@
+// type: 'work' | 'education' | 'activity' | 'cert'
+export const experience = [
+  {
+    id: 'cloudfactory',
+    type: 'work',
+    title: 'Profile Analyst',
+    org: 'CloudFactory',
+    blurb: 'Extracted candidate profile data with web scraping, then filtered and verified profiles.',
+  },
+  {
+    id: 'teaching',
+    type: 'work',
+    title: 'Teacher',
+    org: 'Akhanda Vidya Sadan',
+    blurb: 'Taught Computer Science and Science to grades 3 to 10.',
+  },
+  {
+    id: 'reva',
+    type: 'education',
+    title: 'BSc Computer Science (Cloud Computing and Big Data)',
+    org: 'Reva University',
+    date: '2024 to present',
+    blurb: 'Coursework includes Probability and Statistics, Data Science and Visualization, Python, and RDBMS.',
+  },
+  {
+    id: 'gdg',
+    type: 'activity',
+    title: 'Member',
+    org: 'Google Developers Group, Reva University',
+    date: '2025 to present',
+    blurb: 'On the organizing team for hackathons and workshops. Took part in Cloud Jams.',
+  },
+  {
+    id: 'ml-spec',
+    type: 'cert',
+    title: 'Machine Learning Specialization',
+    org: 'DeepLearning.AI',
+    link: 'https://coursera.org/verify/specialization/CRP9NGWRMVNA',
+  },
+  {
+    id: 'dl-spec',
+    type: 'cert',
+    title: 'Deep Learning Specialization',
+    org: 'DeepLearning.AI',
+    link: 'https://coursera.org/verify/specialization/FAF1RK3AIKXJ',
+  },
+  {
+    id: 'cisco',
+    type: 'cert',
+    title: 'Cisco Cybersecurity Technician',
+    org: 'Cisco',
+  },
+  {
+    id: 'az900',
+    type: 'cert',
+    title: 'Microsoft Azure Fundamentals (AZ-900)',
+    org: 'Microsoft',
+  },
+]
