@@ -119,6 +119,10 @@ section {
   min-height: 100svh;
 }
 
+#hero-canvas{
+  height: 400px;
+  width: 100%;
+}
 
 @media (prefers-reduced-motion: no-preference) {
   html {
