@@ -2,7 +2,6 @@ export const projects = [
   {
     id: 'chess',
     name: 'Chess',
-    role: 'ST',
     tagline: 'Python chess game with an interactive UI, Stockfish move suggestions, a best-move indicator, and PGN export.',
     stack: ['Python', 'pygame', 'AI', 'Stockfish'],
     repo: 'https://github.com/Abh1nayg/chess',
@@ -11,7 +10,6 @@ export const projects = [
   {
     id: 'premier-league-player-clustering',
     name: 'Premier League Player Clustering',
-    role: 'CM',
     tagline: 'Same data, same algorithm, different scaler: 3 clusters or 6.',
     stack: ['Python', 'scikit-learn', 'pandas'],
     repo: 'https://github.com/Abh1nayg/players-pl-analysis25-26',
@@ -20,7 +18,6 @@ export const projects = [
   {
     id: 'melbourne-housing',
     name: 'Melbourne Housing',
-    role: 'CB',
     tagline: 'House price prediction on the Melbourne dataset using scikit-learn pipelines, with random forest tuning and EDA.',
     stack: ['Python', 'scikit-learn', 'Jupyter'],
     repo: 'https://github.com/Abh1nayg/melbourne_housing',
@@ -29,7 +26,6 @@ export const projects = [
   {
     id: 'newton',
     name: 'Newton',
-    role: 'CB',
     tagline: 'Land falling apples on Newton\'s head.',
     stack: ['Python', 'pygame'],
     repo: 'https://github.com/Abh1nayg/newton',
