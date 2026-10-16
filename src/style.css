@@ -120,8 +120,15 @@ section {
 }
 
 #hero-canvas{
-  height: 400px;
+  height: clamp(420px, 70vh, 640px);
   width: 100%;
+}
+
+.hint {
+  color: var(--text-dim);
+  text-align: center;
+  font-size: 0.875rem;
+  margin-top: var(--space-2);
 }
 
 @media (prefers-reduced-motion: no-preference) {
