@@ -13,7 +13,7 @@ export const projects = [
     tagline: 'Same data, same algorithm, different scaler: 3 clusters or 6.',
     stack: ['Python', 'scikit-learn', 'pandas'],
     repo: 'https://github.com/Abh1nayg/players-pl-analysis25-26',
-    cover: { colors: ['#0f3d2e', '#f5a524'], label: 'PL' },
+    cover: { colors: ['#0940e6ff', '#d1ff04ff'], label: 'PL' },
   },
   {
     id: 'melbourne-housing',
