@@ -225,7 +225,7 @@ export function initMagnetic() {
   new ResizeObserver(scheduleMeasure).observe(document.body)
   // The header slides in and out, so re-measure when it finishes moving.
   document.addEventListener('transitionend', (e) => {
-    if (e.target.closest?.('.site-header')) scheduleMeasure()
+    if (e.target.closest?.('.site-header, section')) scheduleMeasure()
   })
 
   document.addEventListener('visibilitychange', () => {
