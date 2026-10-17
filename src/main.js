@@ -6,11 +6,13 @@ import {initHero} from './three/scene.js'
 import {pluck} from './audio/pluck.js'
 import {initHeader} from './header.js'
 import {initMagnetic} from './magnetic.js'
+import {initReveal} from './reveal.js'
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const targets = ['#squad', '#incoming', '#setlist', '#contact']
 initHeader()
 initMagnetic()
+initReveal()
 
 const heroCanvas = document.querySelector('#hero-canvas')
 initHero(heroCanvas, {
