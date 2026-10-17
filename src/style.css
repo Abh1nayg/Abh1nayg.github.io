@@ -119,7 +119,7 @@ section {
   min-height: 100svh;
 }
 
-#hero-canvas{
+#hero-canvas {
   height: clamp(420px, 70vh, 640px);
   width: 100%;
 }
@@ -135,6 +135,14 @@ section {
   html {
     scroll-behavior: smooth;
   }
+}
+
+#pitch {
+  position: relative;
+  width: min(100%, calc(80svh * 68 / 105));
+  justify-self: center;
+  aspect-ratio: 68/105;
+
 }
 
 @media (max-width:640px) {
