@@ -259,9 +259,19 @@ section {
 }
 
 /* Left margin reserved for the docked guitar; --guitar-gutter is set by scene.js. */
-main,
-footer {
+main {
   padding-left: var(--guitar-gutter, 0px);
+}
+
+footer {
+  text-align: center;
+  padding-block: var(--space-6) var(--space-4);
+  color: var(--text-dim);
+  font-size: 0.875rem;
+}
+
+footer p {
+  margin: 0;
 }
 
 .visually-hidden {
