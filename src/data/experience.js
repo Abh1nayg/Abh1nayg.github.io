@@ -1,4 +1,3 @@
-// type: 'work' | 'education' | 'activity' | 'cert'
 export const experience = [
   {
     id: 'cloudfactory',

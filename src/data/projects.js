@@ -10,7 +10,7 @@ export const projects = [
   {
     id: 'premier-league-player-clustering',
     name: 'Premier League Player Clustering',
-    tagline: 'Same data, same algorithm, different scaler: 3 clusters or 6.',
+    tagline: 'Clustering players into 3 or 6 clusters using scikit-learn, with EDA and visualizations.',
     stack: ['Python', 'scikit-learn', 'pandas'],
     repo: 'https://github.com/Abh1nayg/players-pl-analysis25-26',
     cover: { colors: ['#0940e6ff', '#d1ff04ff'], label: 'PL' },
