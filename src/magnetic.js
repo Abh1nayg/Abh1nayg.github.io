@@ -20,6 +20,7 @@ let api = null
 export function refreshMagnetic() {
   api?.refresh()
 }
+export { refreshMagnetic as refresh }
 
 export function initMagnetic() {
   if (api) return api
