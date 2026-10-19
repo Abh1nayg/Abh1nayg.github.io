@@ -50,7 +50,7 @@ export function initHero(container, { onPluck } = {}) {
     fillLight.position.set(-5, 2, 3)
     scene.add(fillLight)
 
-    const rimLight = new DirectionalLight(0xf5a524, 1.5)
+    const rimLight = new DirectionalLight(0xa7c957, 0.75)
     rimLight.position.set(0, -2, -5)
     scene.add(rimLight)
 
