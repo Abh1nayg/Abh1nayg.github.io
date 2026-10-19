@@ -1,24 +1,34 @@
 :root {
-  /* colors */
-  --bg: #fff3dc;
-  --bg-elev: #121614;
-  --text: #7c4dff;
-  --text-dim: #9aa59f;
-  --pitch: #0f3d2e;
-  --pitch-line: #1f6b4f;
-  --accent: #f5a524;
-  --line: #243029;
-  --focus: #7cc4ff;
-  --accent1:#ff4fa3;
-  --accent2:#ff8a1f;
-  --accent3:#ffd500;
-  --accent4:#7c4dff;
+  /* ─── Raw Palette Colors ─────────────────────────────────────────────────── */
+  --hunter-green: #386641;
+  --sage-green: #6a994e;
+  --yellow-green: #a7c957;
+  --vanilla-cream: #f2e8cf;
+  --blushed-brick: #bc4749;
 
-  /* fonts */
+  /* ─── Semantic Theme Variables ───────────────────────────────────────────── */
+  --bg: var(--vanilla-cream);
+  --text: var(--hunter-green);
+  --text-dim: color-mix(in srgb, var(--hunter-green) 72%, transparent);
+  --line: color-mix(in srgb, var(--hunter-green) 20%, transparent);
+  --accent: var(--blushed-brick);
+  --highlight: var(--yellow-green);
+  --focus: var(--blushed-brick);
+
+  /* ─── Pitch Semantics ────────────────────────────────────────────────────── */
+  --pitch-base: var(--sage-green);
+  --pitch-stripe: color-mix(in srgb, var(--sage-green) 85%, var(--hunter-green) 15%);
+  --pitch-line: var(--vanilla-cream);
+  --pitch-border: var(--hunter-green);
+
+  /* Form controls & scrollbars */
+  accent-color: var(--accent);
+
+  /* ─── Typography & Scales ────────────────────────────────────────────────── */
   --font-display: 'Barlow Condensed', sans-serif;
   --font-body: 'Inter Variable', system-ui, sans-serif;
 
-  /* spacing scale */
+  /* Spacing scale */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 1rem;
@@ -26,15 +36,19 @@
   --space-5: 2.5rem;
   --space-6: 4rem;
 
-  /* layout */
+  /* Layout */
   --max-width: 1100px;
   --radius: 10px;
-
   --header-h: 3.5rem;
 }
 
 * {
   box-sizing: border-box;
+}
+
+::selection {
+  background-color: var(--accent);
+  color: var(--vanilla-cream);
 }
 
 body {
@@ -52,6 +66,7 @@ h4 {
   font-family: var(--font-display);
   text-transform: uppercase;
   line-height: 1.1;
+  color: var(--text);
 }
 
 h1 {
@@ -65,17 +80,18 @@ h4 {
 }
 
 a {
-  color: var(--accent);
+  color: var(--text);
   text-decoration: none;
-
+  transition: color 0.2s ease;
 }
 
-
 a:hover {
+  color: var(--accent);
   text-decoration: underline;
 }
 
-a:focus-visible {
+a:focus-visible,
+button:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 3px;
 }
@@ -86,12 +102,13 @@ a:focus-visible {
   padding: 0 var(--space-3);
 }
 
+/* ─── Header & Navigation ──────────────────────────────────────────────────── */
 .site-header {
   position: sticky;
   top: 0;
   width: 100%;
   background: var(--bg);
-  border-bottom: 1px solid rgb(124 77 255 / 0.2);
+  border-bottom: 1px solid var(--line);
   z-index: 10;
   transition: transform 0.25s ease;
 }
@@ -113,12 +130,36 @@ a:focus-visible {
 
 nav {
   display: flex;
-  gap: var(--space-1);
+  align-items: center;
+  gap: var(--space-2);
 }
 
 nav a {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  font-weight: 600;
   line-height: 1.4;
+  color: var(--text);
+  padding: var(--space-1) 0.5rem;
+  border-radius: 999px;
+  transition: color 0.2s ease;
+}
+
+nav a:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* "Make an offer" CTA: 10% Brick button for primary prominence */
+.nav-offer {
+  color: var(--vanilla-cream) !important;
+  background-color: var(--accent);
+  padding: var(--space-1) 0.85rem;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.nav-offer:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
 }
 
 .brand {
@@ -128,18 +169,26 @@ nav a {
   line-height: 1.4;
   color: var(--text);
   font-weight: 800;
+  letter-spacing: 0.04em;
+  transition: color 0.2s ease;
 }
 
-[data-accent="pink"] { --bloom: var(--accent1); }
-[data-accent="orange"] { --bloom: var(--accent2); }
-[data-accent="yellow"] { --bloom: var(--accent3); }
-[data-accent="violet"] { --bloom: var(--accent4); }
-[data-accent="blue"] { --bloom: #4da3ff; }
+.brand:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ─── Magnetic Bloom ───────────────────────────────────────────────────────── */
+[data-accent="brick"] { --bloom: var(--blushed-brick); }
+[data-accent="sage"] { --bloom: var(--sage-green); }
+[data-accent="yellow-green"] { --bloom: var(--yellow-green); }
+[data-accent="hunter"] { --bloom: var(--hunter-green); }
 
 [data-magnetic] {
   --pull: 0;
   --mx: 0;
   --my: 0;
+  --bloom: var(--accent); /* Brick default for nav and buttons */
   position: relative;
   display: inline-block;
   isolation: isolate;
@@ -147,8 +196,7 @@ nav a {
   padding: var(--space-1) 0.65rem;
   border-radius: 999px;
   will-change: transform;
-  /* label shifts from its normal colour to the page colour as the bloom fills in */
-  color: color-mix(in srgb, var(--bg) calc(var(--pull) * 100%), var(--text));
+  color: var(--text);
 }
 
 [data-magnetic]::before {
@@ -159,14 +207,14 @@ nav a {
   width: 220%;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: var(--bloom, var(--accent1));
+  background: var(--bloom, var(--accent));
   opacity: var(--pull);
   transform: translate(-50%, -50%) scale(var(--pull));
   z-index: -1;
   pointer-events: none;
 }
 
-/* Large blocks stay still; a spot of accent colour follows the cursor instead. */
+/* Large blocks stay still; accent bloom spot follows cursor */
 [data-glow] {
   --pull: 0;
   --mx: 0;
@@ -183,8 +231,8 @@ nav a {
   z-index: -1;
   pointer-events: none;
   background: radial-gradient(circle 180px at calc(var(--mx) * 1px) calc(var(--my) * 1px),
-      var(--bloom, var(--accent1)), transparent 70%);
-  opacity: calc(var(--pull) * 0.55);
+      var(--bloom, var(--accent)), transparent 70%);
+  opacity: calc(var(--pull) * 0.45);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -193,12 +241,12 @@ nav a {
   }
 }
 
+/* ─── Sections & Scroll Reveal ─────────────────────────────────────────────── */
 section {
   padding-block: var(--space-6);
   scroll-margin-top: var(--header-h);
 }
 
-/* Scroll reveal: only hides content when the js class is present. */
 .js section:not(.hero) {
   opacity: 0;
   transform: translateY(24px);
@@ -210,7 +258,6 @@ section {
   transform: none;
 }
 
-/* Lists: children get a --i index (set in reveal.js) for a staggered entrance. */
 .js [data-stagger] > *:not([data-magnetic]) {
   opacity: 0;
   transform: translateY(24px);
@@ -224,7 +271,6 @@ section {
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .js section:not(.hero),
   .js [data-stagger] > *:not([data-magnetic]) {
     opacity: 1;
@@ -233,7 +279,6 @@ section {
   }
 }
 
-/* Plain spacer: the page scrolls through it while the fixed guitar sits above. */
 .hero {
   height: 100svh;
   padding-block: 0;
@@ -250,7 +295,6 @@ section {
   width: 100%;
 }
 
-/* Fixed behind the content; never blocks clicks (strings are raycast from window). */
 #hero-canvas {
   position: fixed;
   inset: 0;
@@ -258,45 +302,68 @@ section {
   pointer-events: none;
 }
 
-/* Left margin reserved for the docked guitar; --guitar-gutter is set by scene.js. */
 main {
   padding-left: var(--guitar-gutter, 0px);
 }
 
-footer {
-  text-align: center;
-  padding-block: var(--space-6) var(--space-4);
-  color: var(--text-dim);
-  font-size: 0.875rem;
+/* ─── Squad Section & Tactical Pitch ───────────────────────────────────────── */
+.squad-layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-5);
+  margin-top: var(--space-4);
+  width: 100%;
+  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-footer p {
-  margin: 0;
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
+.squad-layout.has-selection {
+  justify-content: flex-start;
 }
 
 #pitch {
   position: relative;
-  width: min(100%, calc(80svh * 68 / 105));
-  justify-self: center;
+  width: min(100%, calc(72svh * 68 / 105));
+  max-width: 440px;
   aspect-ratio: 68/105;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgb(56 102 65 / 0.16);
+  flex-shrink: 0;
+  margin-inline: auto;
+  transition: margin 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#pitch svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.squad-layout.has-selection #pitch {
+  margin-inline: 0;
+}
+
+/* Pitch SVG theme styles */
+.pitch-bg {
+  fill: var(--pitch-base);
+}
+
+.pitch-stripe {
+  fill: var(--pitch-stripe);
+}
+
+.pitch-border {
+  stroke: var(--pitch-border);
+}
+
+.pitch-lines {
+  stroke: var(--pitch-line);
+}
+
+.pitch-lines .spot {
+  fill: var(--pitch-line);
+  stroke: none;
 }
 
 /* Squad pitch wrappers and tokens */
@@ -318,14 +385,15 @@ footer p {
   transform: translate(-50%, -50%) scale(1);
 }
 
+/* Uniform two-color tokens: hunter disc, cream label & role tag, cream ring */
 .squad-token {
-  width: clamp(56px, 14vw, 64px);
-  height: clamp(56px, 14vw, 64px);
+  width: clamp(54px, 14vw, 62px);
+  height: clamp(54px, 14vw, 62px);
   border-radius: 50%;
-  background-color: var(--token-bg, #0b0b0f);
-  color: var(--token-color, #fff);
-  border: 2px solid rgb(255 255 255 / 0.28);
-  box-shadow: 0 6px 18px rgb(0 0 0 / 0.45), inset 0 1px 0 rgb(255 255 255 / 0.25);
+  background-color: var(--hunter-green);
+  color: var(--vanilla-cream);
+  border: 2px solid var(--vanilla-cream);
+  box-shadow: 0 4px 14px rgb(56 102 65 / 0.35);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -336,28 +404,24 @@ footer p {
   text-align: center;
   user-select: none;
   font-family: var(--font-display);
-  transition: box-shadow 0.25s ease, border-color 0.25s ease;
-}
-
-/* Ensure bloom effect displays on top of the token background and below text */
-.squad-token::before {
-  z-index: 1;
-  mix-blend-mode: screen;
-}
-
-.squad-token > * {
-  position: relative;
-  z-index: 2;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .squad-token:hover {
-  border-color: var(--token-color, #fff);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.55), 0 0 18px var(--bloom, var(--accent1));
+  box-shadow: 0 6px 20px rgb(56 102 65 / 0.45);
 }
 
 .squad-token:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 4px;
+}
+
+/* Selected state: brick ring plus a slight scale-up, identical for every token */
+.squad-token.is-selected,
+.squad-token[aria-selected="true"] {
+  border-color: var(--blushed-brick);
+  box-shadow: 0 0 0 3px var(--blushed-brick), 0 8px 22px rgb(0 0 0 / 0.3);
+  transform: scale(1.08);
 }
 
 .token-label {
@@ -366,7 +430,7 @@ footer p {
   font-weight: 800;
   line-height: 1;
   letter-spacing: 0.04em;
-  color: var(--token-color, #fff);
+  color: var(--vanilla-cream);
 }
 
 .token-role {
@@ -377,9 +441,151 @@ footer p {
   letter-spacing: 0.05em;
   padding: 1px 4px;
   border-radius: 3px;
-  background: rgb(0 0 0 / 0.35);
-  color: var(--token-color, #fff);
-  opacity: 0.95;
+  background: color-mix(in srgb, var(--hunter-green) 50%, #000 50%);
+  color: var(--vanilla-cream);
+}
+
+/* ─── Project Card (Hidden by default until a token is clicked) ───────────── */
+.project-card {
+  display: none;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgb(56 102 65 / 0.08);
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 240px;
+  justify-content: center;
+  flex: 1;
+  min-width: 280px;
+  max-width: 520px;
+}
+
+.squad-layout.has-selection .project-card {
+  display: flex;
+  animation: cardFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Close button for project card */
+.project-card__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--text);
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.project-card__close:hover {
+  color: var(--accent);
+  transform: scale(1.15);
+}
+
+.project-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.project-card__title {
+  margin: 0;
+  font-size: 1.75rem;
+  color: var(--text);
+}
+
+.project-card__role {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--hunter-green) 12%, transparent);
+  color: var(--text);
+  text-transform: uppercase;
+}
+
+.project-card__tagline {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.project-card__stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+}
+
+.project-card__badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+.project-card__github {
+  margin-top: var(--space-3);
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--text);
+  background: color-mix(in srgb, var(--hunter-green) 8%, transparent);
+  border: 1px solid var(--line);
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.project-card__github:hover {
+  color: var(--vanilla-cream) !important;
+  background: var(--hunter-green);
+  border-color: var(--hunter-green);
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+@media (max-width: 860px) {
+  .squad-layout {
+    flex-direction: column;
+  }
+  .squad-layout.has-selection {
+    align-items: center;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -392,7 +598,41 @@ footer p {
   }
 }
 
-@media (max-width:640px) {
+/* ─── Footer: Hunter block with Cream text (Carries the 30%) ──────────────── */
+footer {
+  text-align: center;
+  padding-block: var(--space-6) var(--space-5);
+  background-color: var(--hunter-green);
+  color: var(--vanilla-cream);
+  font-size: 0.875rem;
+  margin-top: var(--space-6);
+}
+
+footer p {
+  margin: 0;
+  color: var(--vanilla-cream);
+  opacity: 0.95;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (max-width: 640px) {
   :root {
     --header-h: 7rem;
   }
@@ -410,7 +650,6 @@ footer p {
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
