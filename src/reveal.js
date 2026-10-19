@@ -1,3 +1,5 @@
+import { refreshMagnetic } from './magnetic.js'
+
 export function initReveal() {
   const root = document.documentElement
   root.classList.add('js')
@@ -17,8 +19,18 @@ export function initReveal() {
   const io = new IntersectionObserver((entries) => {
     for (const entry of entries) {
       if (!entry.isIntersecting) continue
-      entry.target.classList.add('is-visible')
-      io.unobserve(entry.target) // play once
+      const section = entry.target
+      section.classList.add('is-visible')
+      io.unobserve(section) // play once
+
+      // When the section finishes sliding up, re-measure magnetic target positions
+      function onTransitionEnd(e) {
+        if (e.target === section && (e.propertyName === 'transform' || e.propertyName === 'opacity')) {
+          section.removeEventListener('transitionend', onTransitionEnd)
+          refreshMagnetic()
+        }
+      }
+      section.addEventListener('transitionend', onTransitionEnd)
     }
   }, { threshold: 0.15 })
 
