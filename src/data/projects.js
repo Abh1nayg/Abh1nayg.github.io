@@ -5,7 +5,8 @@ export const projects = [
     tagline: 'Python chess game with an interactive UI, Stockfish move suggestions, a best-move indicator, and PGN export.',
     stack: ['Python', 'pygame', 'AI', 'Stockfish'],
     repo: 'https://github.com/Abh1nayg/chess',
-    cover: { colors: ['#0b0b0f', '#d9d9d9'], label: 'CHE' },
+    accent: '#bc4749',
+    cover: { accent: '#bc4749', label: 'CHE' },
   },
   {
     id: 'premier-league-player-clustering',
@@ -13,7 +14,8 @@ export const projects = [
     tagline: 'Clustering players into 3 or 6 clusters using scikit-learn, with EDA and visualizations.',
     stack: ['Python', 'scikit-learn', 'pandas'],
     repo: 'https://github.com/Abh1nayg/players-pl-analysis25-26',
-    cover: { colors: ['#0940e6ff', '#d1ff04ff'], label: 'PL' },
+    accent: '#6a994e',
+    cover: { accent: '#6a994e', label: 'PL' },
   },
   {
     id: 'melbourne-housing',
@@ -21,7 +23,8 @@ export const projects = [
     tagline: 'House price prediction on the Melbourne dataset using scikit-learn pipelines, with random forest tuning and EDA.',
     stack: ['Python', 'scikit-learn', 'Jupyter'],
     repo: 'https://github.com/Abh1nayg/melbourne_housing',
-    cover: { colors: ['#0f3d2e', '#f5a524'], label: 'MELB' },
+    accent: '#a7c957',
+    cover: { accent: '#a7c957', label: 'MELB' },
   },
   {
     id: 'newton',
@@ -29,6 +32,7 @@ export const projects = [
     tagline: 'Land falling apples on Newton\'s head.',
     stack: ['Python', 'pygame'],
     repo: 'https://github.com/Abh1nayg/newton',
-    cover: { colors: ['#3b0a0a', '#e63946'], label: 'NEW' },
+    accent: '#386641',
+    cover: { accent: '#386641', label: 'NEW' },
   }
 ]
