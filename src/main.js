@@ -8,6 +8,7 @@ import {initHeader} from './header.js'
 import {initSquad} from './squad.js'
 import {initMagnetic} from './magnetic.js'
 import {initReveal} from './reveal.js'
+import {initFooter} from './footer.js'
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const targets = ['#squad', '#incoming', '#setlist', '#contact']
@@ -15,6 +16,7 @@ initHeader()
 initSquad()
 initMagnetic()
 initReveal()
+initFooter()
 
 const heroCanvas = document.querySelector('#hero-canvas')
 initHero(heroCanvas, {
