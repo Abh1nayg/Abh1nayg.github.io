@@ -297,7 +297,99 @@ footer p {
   width: min(100%, calc(80svh * 68 / 105));
   justify-self: center;
   aspect-ratio: 68/105;
+}
 
+/* Squad pitch wrappers and tokens */
+.squad-slot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+  transition-delay: calc(var(--i, 0) * 100ms + 150ms);
+}
+
+.js #squad:not(.is-visible) .squad-slot {
+  opacity: 0;
+  transform: translate(-50%, -60px) scale(0.7);
+}
+
+.js #squad.is-visible .squad-slot {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.squad-token {
+  width: clamp(56px, 14vw, 64px);
+  height: clamp(56px, 14vw, 64px);
+  border-radius: 50%;
+  background-color: var(--token-bg, #0b0b0f);
+  color: var(--token-color, #fff);
+  border: 2px solid rgb(255 255 255 / 0.28);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.45), inset 0 1px 0 rgb(255 255 255 / 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  padding: 0;
+  text-align: center;
+  user-select: none;
+  font-family: var(--font-display);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+/* Ensure bloom effect displays on top of the token background and below text */
+.squad-token::before {
+  z-index: 1;
+  mix-blend-mode: screen;
+}
+
+.squad-token > * {
+  position: relative;
+  z-index: 2;
+}
+
+.squad-token:hover {
+  border-color: var(--token-color, #fff);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.55), 0 0 18px var(--bloom, var(--accent1));
+}
+
+.squad-token:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}
+
+.token-label {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--token-color, #fff);
+}
+
+.token-role {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: rgb(0 0 0 / 0.35);
+  color: var(--token-color, #fff);
+  opacity: 0.95;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .squad-slot,
+  .js #squad:not(.is-visible) .squad-slot,
+  .js #squad.is-visible .squad-slot {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+    transition: none;
+  }
 }
 
 @media (max-width:640px) {
