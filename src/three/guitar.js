@@ -50,11 +50,11 @@ const BRIDGE_Y = BODY_BOT_Y + BODY_HEIGHT * 0.22   // ≈ −2.19
 // Bridge pickup: BODY_TOP_Y − 1.26  = −1.81  → zAt ≈ 0.242  clearance ≈ 0.057  ✓
 
 // ─── Materials ────────────────────────────────────────────────────────────────
-const neckMat = new MeshStandardMaterial({ color: 0xc8a96e, roughness: 0.6 })
-const fretboardMat = new MeshStandardMaterial({ color: 0x2b1b12, roughness: 0.85 })
-const nutMat = new MeshStandardMaterial({ color: 0xe8e0cc, roughness: 0.4 })
-const bodyMat = new MeshStandardMaterial({ color: 0xb3202a, roughness: 0.3, metalness: 0.2 })
-const headstockMat = new MeshStandardMaterial({ color: 0xc89b5e, roughness: 0.7 })
+const neckMat = new MeshStandardMaterial({ color: 0xf2e8cf, roughness: 0.6 })
+const fretboardMat = new MeshStandardMaterial({ color: 0x243029, roughness: 0.85 })
+const nutMat = new MeshStandardMaterial({ color: 0xf2e8cf, roughness: 0.4 })
+const bodyMat = new MeshStandardMaterial({ color: 0xbc4749, roughness: 0.3, metalness: 0.2 })
+const headstockMat = new MeshStandardMaterial({ color: 0x6a994e, roughness: 0.7 })
 const pegMat = new MeshStandardMaterial({ color: 0xcfcfcf, metalness: 0.8, roughness: 0.35 })
 const pickupMat = new MeshStandardMaterial({ color: 0x111111, roughness: 0.4 })
 const stringMat = new MeshStandardMaterial({ color: 0xd4d4d4, metalness: 0.9, roughness: 0.25 })
