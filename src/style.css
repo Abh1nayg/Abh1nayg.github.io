@@ -462,29 +462,36 @@ main {
   color: var(--hunter-green);
 }
 
-/* ─── Project Card (Hidden by default, slides in when a token is clicked) ─── */
+/* ─── Project Card (look only) ─── */
 .project-card {
   min-width: 0;
   width: 100%;
   max-width: 520px;
   background: var(--bg);
-  border: 0 solid var(--line);
-  border-left: 0 solid var(--bloom, var(--accent));
-  border-width: 0;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--bloom, var(--accent));
   border-radius: var(--radius);
-  padding: 0;
+  padding: var(--space-5);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 0 0 transparent;
+  box-shadow: 0 4px 20px rgb(56 102 65 / 0.08);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  min-height: 0;
+  min-height: 240px;
   justify-content: center;
+}
+
+/* ─── Squad Panel (behavior: hidden by default, slides in when a token is clicked) ─── */
+.squad-panel {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transform: translateX(20px);
+  padding: 0;
+  border-width: 0;
+  min-height: 0;
+  box-shadow: 0 0 0 transparent;
   transition:
     opacity 0.35s ease,
     transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
@@ -495,7 +502,7 @@ main {
     box-shadow 0.35s ease;
 }
 
-.squad-layout.has-selection .project-card {
+.squad-layout.has-selection .squad-panel {
   padding: var(--space-5);
   min-height: 240px;
   border-width: 1px;
@@ -508,7 +515,7 @@ main {
   transform: translateX(0);
 }
 
-.squad-layout.has-selection .project-card.is-swapping {
+.squad-layout.has-selection .squad-panel.is-swapping {
   opacity: 0.25;
   transform: translateY(3px);
 }
