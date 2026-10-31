@@ -2,5 +2,5 @@ export const links = {
   email: 'ghimireabhinaya80@gmail.com',
   github: 'https://github.com/Abh1nayg',
   credly: 'https://www.credly.com/users/abhinaya-ghimire',
-  cv: '/public/Abhinaya_Resume.pdf',
+  cv: '/Abhinaya_Resume.pdf',
 }
