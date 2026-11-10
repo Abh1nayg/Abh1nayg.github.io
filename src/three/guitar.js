@@ -59,6 +59,35 @@ const pegMat = new MeshStandardMaterial({ color: 0xcfcfcf, metalness: 0.8, rough
 const pickupMat = new MeshStandardMaterial({ color: 0x111111, roughness: 0.4 })
 const stringMat = new MeshStandardMaterial({ color: 0xd4d4d4, metalness: 0.9, roughness: 0.25 })
 
+// Finish per site theme. Strings are cloned per string in scene.js, so they
+// keep their own colour and aren't themed here.
+const FINISHES = {
+  // Matte black with brass hardware
+  editorial: {
+    body: [0x161514, 0.55, 0.15], headstock: [0x161514, 0.55, 0.15],
+    neck: [0x2b2420, 0.7, 0], fretboard: [0x120f0d, 0.85, 0],
+    nut: [0xe6dccb, 0.4, 0], peg: [0xb08d57, 0.35, 0.85],
+  },
+  // Tobacco sunburst on maple, chrome hardware
+  studio: {
+    body: [0x8a4a22, 0.32, 0.1], headstock: [0x8a4a22, 0.32, 0.1],
+    neck: [0xd8b47a, 0.6, 0], fretboard: [0x2b1d14, 0.85, 0],
+    nut: [0xf1e9d8, 0.4, 0], peg: [0xcfcfcf, 0.35, 0.8],
+  },
+}
+
+export function setGuitarTheme(name) {
+  const f = FINISHES[name]
+  if (!f) return
+  const mats = { body: bodyMat, headstock: headstockMat, neck: neckMat, fretboard: fretboardMat, nut: nutMat, peg: pegMat }
+  for (const [key, [color, roughness, metalness]] of Object.entries(f)) {
+    mats[key].color.setHex(color)
+    mats[key].roughness = roughness
+    mats[key].metalness = metalness
+  }
+  window.dispatchEvent(new Event('guitar-theme'))
+}
+
 // ─── Helper: add a box mesh to a group ───────────────────────────────────────
 function box(w, h, d, mat, parent, px = 0, py = 0, pz = 0, rx = 0) {
     const m = new Mesh(new BoxGeometry(w, h, d), mat)

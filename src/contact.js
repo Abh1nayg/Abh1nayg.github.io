@@ -1,15 +1,9 @@
 import { links } from './data/links.js'
 
-export function initFooter() {
-  let container = document.querySelector('.footer-links')
-  if (!container) {
-    const parent = document.querySelector('footer .container') || document.querySelector('footer')
-    if (!parent) return
-    container = document.createElement('nav')
-    container.className = 'footer-links'
-    container.setAttribute('aria-label', 'Social and Contact')
-    parent.appendChild(container)
-  }
+// Fills the "Make an offer" section with GitHub, Email and CV links.
+export function initContact() {
+  const container = document.querySelector('.contact-links')
+  if (!container) return
 
   const items = [
     { label: 'GitHub', href: links?.github, external: true },
@@ -22,6 +16,7 @@ export function initFooter() {
       const a = document.createElement('a')
       a.href = href
       a.textContent = label
+      a.setAttribute('data-magnetic', '')
       if (external) {
         a.target = '_blank'
         a.rel = 'noopener noreferrer'

@@ -1,27 +1,38 @@
-import '@fontsource/barlow-condensed/600.css'
-import '@fontsource/barlow-condensed/800.css'
+import '@fontsource-variable/fraunces'
+import '@fontsource-variable/jetbrains-mono'
 import '@fontsource-variable/inter'
 import './style.css'
+import './themes.css'
+import {initTheme} from './theme.js'
 import {initHero} from './three/scene.js'
 import {pluck} from './audio/pluck.js'
 import {initHeader} from './header.js'
 import {initSquad} from './squad.js'
+import {initGrid} from './grid.js'
 import {initMagnetic} from './magnetic.js'
 import {initReveal} from './reveal.js'
-import {initFooter} from './footer.js'
+import {initContact} from './contact.js'
+import {initSetlist} from './setlist.js'
+import {initHeroText} from './hero-text.js'
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-const targets = ['#squad', '#incoming', '#setlist', '#contact']
+// Index-mapped to guitar strings: string 0 = intro, 1 = squad, 2 = setlist, 3 = contact.
+const targets = ['#intro', '#squad', '#setlist', '#contact']
+initTheme()
 initHeader()
 initSquad()
+initGrid()
+initSetlist()
+initHeroText()
 initMagnetic()
 initReveal()
-initFooter()
+initContact()
 
 const heroCanvas = document.querySelector('#hero-canvas')
-initHero(heroCanvas, {
+const hero = initHero(heroCanvas, {
   onPluck(index) {
     pluck(index)
+    hero?.vibrate(index)
     const target = targets[index]
     if (target) {
       // Wait so the note is heard before the page scrolls.
@@ -30,4 +41,18 @@ initHero(heroCanvas, {
       }, 300)
     }
   }
+})
+
+
+// Each section's guitar string shakes and glows when the section scrolls into view.
+const sectionIO = new IntersectionObserver((entries) => {
+  for (const entry of entries) {
+    if (!entry.isIntersecting) continue
+    const index = targets.indexOf(`#${entry.target.id}`)
+    if (index >= 0) hero?.vibrate(index)
+  }
+}, { threshold: 0.35 })
+targets.forEach((sel) => {
+  const el = document.querySelector(sel)
+  if (el) sectionIO.observe(el)
 })

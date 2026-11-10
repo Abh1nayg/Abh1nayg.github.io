@@ -1,3 +1,4 @@
+import { STORY } from '../story.js'
 import {
     WebGLRenderer, Scene, PerspectiveCamera,
     AmbientLight, DirectionalLight,
@@ -18,6 +19,7 @@ function gutterPx() {
     if (window.innerWidth < NARROW_BREAKPOINT) return 0
     return Math.min(260, Math.max(150, window.innerWidth * 0.14))
 }
+
 
 export function initHero(container, { onPluck } = {}) {
 
@@ -50,7 +52,7 @@ export function initHero(container, { onPluck } = {}) {
     fillLight.position.set(-5, 2, 3)
     scene.add(fillLight)
 
-    const rimLight = new DirectionalLight(0xa7c957, 0.75)
+    const rimLight = new DirectionalLight(0xffe2b8, 0.6)
     rimLight.position.set(0, -2, -5)
     scene.add(rimLight)
 
@@ -62,6 +64,15 @@ export function initHero(container, { onPluck } = {}) {
     const bb     = new Box3().setFromObject(guitar)
     const size   = bb.getSize(new Vector3())
     const center = bb.getCenter(new Vector3())
+
+    // Each string gets its own material so one can glow without lighting the rest.
+    const vib = strings.map((s) => {
+        s.material = s.material.clone()
+        s.material.emissive.set(0xffe9a8)
+        s.material.emissiveIntensity = 0
+        return { mesh: s, baseX: s.position.x, start: -Infinity }
+    })
+    const VIB_MS = 1400
 
     // Shift the guitar so its visual centre sits at the pivot's local origin
     guitar.position.sub(center)
@@ -125,12 +136,17 @@ export function initHero(container, { onPluck } = {}) {
     // ── Scroll progress ───────────────────────────────────────────────────────
     let progress = 0   // eased value actually used for the pose
     let target = 0     // real value from scrollY
+    let shift = 0, shiftTarget = 0 // part-way slide left for the "about" line
+    const SHIFT_NDC = -0.42        // guitar centre at ~29% of viewport width
     const readScroll = () => {
-        target = clamp01(window.scrollY / (window.innerHeight * 0.6))
+        // Guitar only moves inside the STORY dock window (see story.js).
+        const s = window.scrollY / window.innerHeight
+        target = clamp01((s - STORY.dockFrom) / (STORY.dockTo - STORY.dockFrom))
+        shiftTarget = clamp01((s - STORY.shiftFrom) / (STORY.shiftTo - STORY.shiftFrom))
     }
     readScroll()
     window.addEventListener('scroll', readScroll, { passive: true })
-    if (reduceMotion) progress = target
+    if (reduceMotion) { progress = target; shift = shiftTarget }
 
     // ── Click / hover detection ───────────────────────────────────────────────
     // The canvas is fixed behind the page with pointer-events: none, so we listen
@@ -171,8 +187,13 @@ export function initHero(container, { onPluck } = {}) {
         progress = reduceMotion ? target : progress + (target - progress) * 0.1
         if (Math.abs(target - progress) < 0.0005) progress = target
 
+        shift = reduceMotion ? shiftTarget : shift + (shiftTarget - shift) * 0.1
+        if (Math.abs(shiftTarget - shift) < 0.0005) shift = shiftTarget
+
         const e = smoothstep(progress)
-        pivot.position.x = lerp(0, dock.x, e)
+        const halfW = Math.tan((camera.fov * Math.PI / 180) / 2) * camera.position.z * camera.aspect
+        const midX = lerp(0, SHIFT_NDC * halfW, smoothstep(shift))
+        pivot.position.x = lerp(midX, dock.x, e)
         pivot.scale.setScalar(lerp(1, dock.scale, e))
         pivot.rotation.z = lerp(HERO_TILT, DOCK_TILT, e)
 
@@ -180,12 +201,32 @@ export function initHero(container, { onPluck } = {}) {
         const opacity = dock.active ? 1 : 1 - e
         container.style.opacity = opacity.toFixed(3)
 
+        // String shake + glow, decaying over VIB_MS. Reduced motion: glow only.
+        const now = performance.now()
+        let vibrating = false
+        for (const v of vib) {
+            const k = 1 - (now - v.start) / VIB_MS
+            if (k <= 0) {
+                if (v.mesh.material.emissiveIntensity !== 0) {
+                    v.mesh.material.emissiveIntensity = 0
+                    v.mesh.position.x = v.baseX
+                    vibrating = true // render the reset frame
+                }
+                continue
+            }
+            vibrating = true
+            const amp = k * k
+            v.mesh.material.emissiveIntensity = 0.9 * amp
+            v.mesh.position.x = reduceMotion ? v.baseX : v.baseX + Math.sin(now * 0.09) * 0.012 * amp
+        }
+        if (vibrating) lastKey = ''
+
         if (!reduceMotion) {
             const t = performance.now() / 1000
             pivot.rotation.y = Math.sin(t * 0.6) * lerp(HERO_SWAY, DOCK_SWAY, e)
         } else {
             // Nothing is animating except scroll, so skip identical frames.
-            const key = `${e.toFixed(4)}|${renderer.domElement.width}|${renderer.domElement.height}`
+            const key = `${e.toFixed(4)}|${shift.toFixed(4)}|${renderer.domElement.width}|${renderer.domElement.height}`
             if (key === lastKey) return
             lastKey = key
         }
@@ -209,4 +250,14 @@ export function initHero(container, { onPluck } = {}) {
         lastKey = ''
     }
     new ResizeObserver(resize).observe(container)
+    // Re-render after a theme swap (matters when reduced motion skips frames).
+    window.addEventListener('guitar-theme', () => { lastKey = '' })
+
+    return {
+        // Shake and glow one string (0 = low E … 5 = high E).
+        vibrate(index) {
+            const v = vib[index]
+            if (v) v.start = performance.now()
+        },
+    }
 }

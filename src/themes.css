@@ -1,0 +1,165 @@
+/* ─── Themes ──────────────────────────────────────────────────────────────────
+   Two candidates, switched with data-theme on <html> (see theme.js).
+   Each sets the palette roles used in style.css, fonts, and a background texture.
+   The texture sits on <body>, so it scrolls with the page rather than staying fixed. */
+
+/* Fine film grain, reused by both themes at different strengths. */
+:root {
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Editorial dark: near-black, off-white, one amber accent, serif headings ── */
+[data-theme='editorial'] {
+  color-scheme: dark;
+  --paper: #0f0e0d;
+  --ink: #ece6dc;
+  --tone-1: #d4a35a; /* amber */
+  --tone-2: #7d8a78; /* muted sage */
+  --tone-3: #a89a86; /* stone */
+  --shadow-rgb: 0 0 0;
+  --pitch-base: #181a17;
+  --pitch-stripe: #1d201c;
+  --pitch-line: color-mix(in srgb, var(--ink) 35%, transparent);
+
+  --font-display: 'Fraunces Variable', Georgia, serif;
+  --font-body: 'Inter Variable', system-ui, sans-serif;
+  --font-label: 'Inter Variable', system-ui, sans-serif;
+  --display-case: none;
+  --label-case: uppercase;
+  --label-tracking: 0.18em;
+
+  --texture: var(--grain);
+  --texture-opacity: 0.07;
+  --texture-size: 180px;
+}
+
+/* ── Studio / analog: paper and charcoal, burnt orange, mono labels, ruled lines ── */
+[data-theme='studio'] {
+  color-scheme: light;
+  --paper: #ece5d6;
+  --ink: #2a2622;
+  --tone-1: #b4532e; /* burnt orange */
+  --tone-2: #5f6d5b; /* tape green */
+  --tone-3: #c39a45; /* mustard */
+  --shadow-rgb: 42 38 34;
+  --pitch-base: #5f6d5b;
+  --pitch-stripe: #59665a;
+  --pitch-line: #ece5d6;
+
+  --font-display: 'Inter Variable', system-ui, sans-serif;
+  --font-body: 'Inter Variable', system-ui, sans-serif;
+  --font-label: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --display-case: none;
+  --label-case: uppercase;
+  --label-tracking: 0.08em;
+
+  /* Grain plus faint horizontal rules, like a notebook / tape sheet. */
+  --texture: var(--grain),
+    repeating-linear-gradient(to bottom, transparent 0 31px, color-mix(in srgb, var(--ink) 5%, transparent) 31px 32px);
+  --texture-opacity: 0.1;
+  --texture-size: 180px, auto;
+}
+
+[data-theme='studio'] h1,
+[data-theme='studio'] h2 {
+  letter-spacing: -0.03em;
+  font-weight: 750;
+}
+
+[data-theme='editorial'] h1,
+[data-theme='editorial'] h2 {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* ── Texture layer: a full-page overlay that scrolls with the document ── */
+body {
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -3; /* under the guitar canvas (-1) and hero text (-2) */
+  pointer-events: none;
+  background-image: var(--texture);
+  background-size: var(--texture-size);
+  opacity: var(--texture-opacity);
+}
+
+/* Temporary theme switcher, for choosing between the two. */
+.theme-switch {
+  position: fixed;
+  right: var(--space-3);
+  bottom: var(--space-3);
+  z-index: 50;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--paper) 85%, transparent);
+  backdrop-filter: blur(8px);
+  color: var(--text);
+  font: 600 0.8rem var(--font-label);
+  text-transform: var(--label-case);
+  letter-spacing: var(--label-tracking);
+  cursor: pointer;
+}
+
+/* ─── Cohesion: one continuous page rather than stacked blocks ─────────────── */
+main section:not(.hero) {
+  padding-block: clamp(4rem, 12vh, 8rem);
+}
+
+/* A hairline + eyebrow opens every section, so they read as chapters of one page. */
+main section:not(.hero, .intro) > .container {
+  border-top: 1px solid var(--line);
+  padding-top: var(--space-5);
+}
+
+.eyebrow {
+  margin: 0 0 var(--space-2);
+  font: 500 0.75rem var(--font-label);
+  text-transform: var(--label-case);
+  letter-spacing: var(--label-tracking);
+  color: var(--accent);
+}
+
+main h1 {
+  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  margin-block: 0 var(--space-3);
+}
+
+main h2 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  margin-block: 0 var(--space-5);
+}
+
+/* Header and footer share the page background instead of being solid bars. */
+.site-header {
+  background: color-mix(in srgb, var(--paper) 78%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.site-footer,
+.site-footer p,
+.footer-inner p {
+  background: transparent;
+  color: var(--text-dim);
+}
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  margin-left: var(--guitar-gutter, 0px);
+}
+
+nav a.nav-offer,
+nav a.nav-offer:hover {
+  color: var(--paper);
+}
+
+.footer-inner {
+  justify-content: center;
+  text-align: center;
+}

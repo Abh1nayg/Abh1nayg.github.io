@@ -1,5 +1,5 @@
 import { projects } from "./data/projects";
-import { formation } from "./data/formations";
+import { getSlots } from "./data/formations";
 import { refreshMagnetic } from "./magnetic";
 import { ROLE_NAMES, buildCard } from "./card";
 
@@ -11,7 +11,7 @@ export function initSquad() {
   if (pitch.querySelector(".squad-slot")) return;
 
   const squadSize = projects.length;
-  const slots = formation[squadSize] || formation[4] || Object.values(formation)[0] || [];
+  const slots = getSlots(squadSize);
   const layout = document.querySelector(".squad-layout");
   const cardContainer = document.getElementById("project-card");
 

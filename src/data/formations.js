@@ -7,3 +7,9 @@ export const formation = {
     { x: 50, y: 78, role: 'CB' },
   ],
 }
+
+// Single source for slot lookup; falls back to the 4-player layout.
+// Entries may be undefined if there are more projects than slots.
+export function getSlots(count) {
+  return formation[count] || formation[4] || Object.values(formation)[0] || []
+}
