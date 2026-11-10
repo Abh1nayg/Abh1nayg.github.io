@@ -48,6 +48,7 @@
 }
 
 body {
+  position: relative;
   background-color: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
@@ -78,6 +79,24 @@ h4 {
   font-weight: 600;
 }
 
+main h1 {
+  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  margin-block: 0 var(--space-3);
+}
+
+main h2 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  margin-block: 0 var(--space-5);
+}
+
+.eyebrow {
+  margin: 0 0 var(--space-2);
+  font: 500 0.75rem var(--font-label);
+  text-transform: var(--label-case);
+  letter-spacing: var(--label-tracking);
+  color: var(--accent);
+}
+
 a {
   color: var(--text);
   text-decoration: none;
@@ -106,7 +125,8 @@ button:focus-visible {
   position: sticky;
   top: 0;
   width: 100%;
-  background: var(--bg);
+  background: color-mix(in srgb, var(--paper) 78%, transparent);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
   z-index: 10;
   transition: transform 0.25s ease;
@@ -253,8 +273,14 @@ h2[data-magnetic] {
 
 /* ─── Sections & Scroll Reveal ─────────────────────────────────────────────── */
 section {
-  padding-block: var(--space-6);
+  padding-block: clamp(4rem, 12vh, 8rem);
   scroll-margin-top: var(--header-h);
+}
+
+/* A hairline + eyebrow opens every section after intro, reading as chapters of one page. */
+main section:not(.hero, .intro) > .container {
+  border-top: 1px solid var(--line);
+  padding-top: var(--space-5);
 }
 
 .js section:not(.hero) {
@@ -660,10 +686,12 @@ a.project-card__github:hover {
   }
 }
 
-/* ─── Footer: Slim Hunter bar with Cream text ─────────────────────────────── */
+/* ─── Footer ──────────────────────────────────────────────────────────────── */
 .site-footer {
-  background-color: var(--ink);
-  color: var(--paper);
+  background: transparent;
+  color: var(--text-dim);
+  border-top: 1px solid var(--line);
+  margin-left: var(--guitar-gutter, 0px);
   padding-block: var(--space-3);
   font-size: 0.85rem;
   line-height: 1.4;
@@ -671,17 +699,17 @@ a.project-card__github:hover {
 
 .footer-inner {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  text-align: center;
   padding-inline: var(--space-3);
   gap: var(--space-2);
 }
 
 .footer-inner p {
   margin: 0;
-  color: var(--paper);
+  color: var(--text-dim);
   font-size: 0.85rem;
-  opacity: 0.95;
 }
 
 .intro-lede {
@@ -712,44 +740,6 @@ a.project-card__github:hover {
 .contact-links a:hover {
   color: var(--paper);
   background: var(--ink);
-}
-
-.footer-links {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.footer-links a {
-  color: var(--paper);
-  font-size: 0.85rem;
-  transition: color 0.2s ease;
-}
-
-.footer-links a:hover {
-  color: var(--highlight);
-  text-decoration: underline;
-}
-
-@media (max-width: 640px) {
-  .footer-inner {
-    flex-direction: column;
-    text-align: center;
-    gap: var(--space-1);
-    padding-block: var(--space-1);
-  }
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
 }
 
 @media (prefers-reduced-motion: no-preference) {

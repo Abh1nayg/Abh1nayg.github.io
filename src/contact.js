@@ -7,6 +7,7 @@ export function initContact() {
 
   const items = [
     { label: 'GitHub', href: links?.github, external: true },
+    { label: 'Credly', href: links?.credly, external: true },
     { label: 'Email', href: links?.email ? `mailto:${links.email}` : null, external: false },
     { label: 'CV', href: links?.cv, external: true },
   ].filter((item) => Boolean(item.href))

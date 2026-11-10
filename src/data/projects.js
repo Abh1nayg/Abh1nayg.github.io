@@ -6,7 +6,7 @@ export const projects = [
     stack: ['Python', 'pygame', 'AI', 'Stockfish'],
     repo: 'https://github.com/Abh1nayg/chess',
     accent: 'brick',
-    cover: { accent: 'brick', label: 'CHE' },
+    cover: { label: 'CHE' },
   },
   {
     id: 'premier-league-player-clustering',
@@ -15,7 +15,7 @@ export const projects = [
     stack: ['Python', 'scikit-learn', 'pandas'],
     repo: 'https://github.com/Abh1nayg/players-pl-analysis25-26',
     accent: 'sage',
-    cover: { accent: 'sage', label: 'PL' },
+    cover: { label: 'PL' },
   },
   {
     id: 'melbourne-housing',
@@ -24,7 +24,7 @@ export const projects = [
     stack: ['Python', 'scikit-learn', 'Jupyter'],
     repo: 'https://github.com/Abh1nayg/melbourne_housing',
     accent: 'yellow-green',
-    cover: { accent: 'yellow-green', label: 'MELB' },
+    cover: { label: 'MELB' },
   },
   {
     id: 'newton',
@@ -33,6 +33,6 @@ export const projects = [
     stack: ['Python', 'pygame'],
     repo: 'https://github.com/Abh1nayg/newton',
     accent: 'hunter',
-    cover: { accent: 'hunter', label: 'NEW' },
+    cover: { label: 'NEW' },
   }
 ]
