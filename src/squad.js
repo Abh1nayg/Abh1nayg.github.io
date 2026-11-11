@@ -139,7 +139,10 @@ export function initSquad() {
 
     token.append(labelSpan, roleSpan);
 
+    const drag = makeDraggable(wrapper, token, pitch);
+
     token.addEventListener("click", (e) => {
+      if (drag.justDragged()) return; // a drag ends with a click; don't open the card
       const isKeyboard = e.detail === 0;
       selectProject(index, token, isKeyboard);
     });
@@ -150,4 +153,59 @@ export function initSquad() {
 
   // Re-scan and re-measure magnetic targets
   refreshMagnetic();
+}
+
+// Tokens can be dragged around the pitch; on release they spring back to their
+// slot in the formation. The wrapper moves (CSS translate) so the token's own
+// transform stays free for the magnetic pull.
+function makeDraggable(wrapper, token, pitch) {
+  const THRESHOLD = 6; // px before a press becomes a drag
+  let start = null;
+  let dragging = false;
+  let suppress = false;
+
+  token.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0) return;
+    const p = pitch.getBoundingClientRect();
+    const w = wrapper.getBoundingClientRect();
+    const cx = w.left + w.width / 2;
+    const cy = w.top + w.height / 2;
+    start = {
+      id: e.pointerId, x: e.clientX, y: e.clientY,
+      // Keep the token's centre on the pitch.
+      minX: p.left - cx, maxX: p.right - cx,
+      minY: p.top - cy, maxY: p.bottom - cy,
+    };
+    dragging = false;
+    token.setPointerCapture(e.pointerId); // keep receiving moves if the cursor outruns the token
+  });
+
+  token.addEventListener("pointermove", (e) => {
+    if (!start || e.pointerId !== start.id) return;
+    let dx = e.clientX - start.x;
+    let dy = e.clientY - start.y;
+    if (!dragging) {
+      if (Math.hypot(dx, dy) < THRESHOLD) return;
+      dragging = true;
+      wrapper.classList.add("is-dragging");
+    }
+    dx = Math.min(start.maxX, Math.max(start.minX, dx));
+    dy = Math.min(start.maxY, Math.max(start.minY, dy));
+    wrapper.style.translate = `${dx}px ${dy}px`;
+  });
+
+  const end = (e) => {
+    if (!start || e.pointerId !== start.id) return;
+    start = null;
+    if (!dragging) return;
+    dragging = false;
+    wrapper.classList.remove("is-dragging");
+    wrapper.style.translate = ""; // CSS transition springs it back
+    suppress = true;
+    setTimeout(() => { suppress = false; }, 0);
+  };
+  token.addEventListener("pointerup", end);
+  token.addEventListener("pointercancel", end);
+
+  return { justDragged: () => suppress };
 }
