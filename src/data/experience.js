@@ -48,11 +48,13 @@ export const experience = [
     type: 'cert',
     title: 'Cisco Cybersecurity Technician',
     org: 'Cisco',
+    link: 'https://www.credly.com/badges/3f879a2e-e914-491c-b3f3-ffd63e82e2ee',
   },
   {
     id: 'az900',
     type: 'cert',
     title: 'Microsoft Azure Fundamentals (AZ-900)',
     org: 'Microsoft',
+    link: 'https://www.credly.com/badges/decc973c-647a-42d6-9ce5-1a103924b3dc',
   },
 ]
