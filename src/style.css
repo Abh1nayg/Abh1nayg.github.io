@@ -49,6 +49,7 @@
 
 body {
   position: relative;
+  overflow-x: clip;
   background-color: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
@@ -357,7 +358,7 @@ main {
 
 .squad-layout.has-selection {
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-5);
+  gap: clamp(var(--space-3), 3vw, var(--space-5));
 }
 
 #pitch {
@@ -395,11 +396,25 @@ main {
 
 /* Squad pitch wrappers and tokens */
 .squad-slot {
+  --delay: calc(var(--i, 0) * 100ms + 150ms);
   position: absolute;
   transform: translate(-50%, -50%);
   z-index: 2;
-  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
-  transition-delay: calc(var(--i, 0) * 100ms + 150ms);
+  /* translate is the drag offset (squad.js); it springs back with a small overshoot */
+  transition:
+    transform 0.65s cubic-bezier(0.16, 1, 0.3, 1) var(--delay),
+    opacity 0.5s ease var(--delay),
+    translate 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0s;
+}
+
+.squad-slot.is-dragging {
+  z-index: 5;
+  transition: none;
+}
+
+.squad-slot.is-dragging .squad-token {
+  scale: 1.12;
+  box-shadow: 0 14px 30px rgb(var(--shadow-rgb) / 0.45);
 }
 
 .js #squad:not(.is-visible) .squad-slot {
@@ -430,6 +445,7 @@ main {
   padding: 0;
   text-align: center;
   user-select: none;
+  touch-action: none; /* tokens can be dragged on touch screens too */
   font-family: var(--font-display);
   transition: scale 0.25s ease, background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
@@ -527,7 +543,7 @@ main {
 }
 
 .squad-layout.has-selection .squad-panel {
-  padding: var(--space-5);
+  padding: clamp(var(--space-4), 3vw, var(--space-5));
   min-height: 240px;
   border-width: 1px;
   border-left-width: 5px;
@@ -717,6 +733,7 @@ a.project-card__github:hover {
   margin-top: var(--space-3);
   font-size: 1.125rem;
   line-height: 1.6;
+  white-space: pre-line;
 }
 
 .contact-links {
@@ -748,9 +765,35 @@ a.project-card__github:hover {
   }
 }
 
+/* Phones: header stays on one row with tighter links; it only stacks on the
+   narrowest screens, where the links no longer fit beside the name. */
 @media (max-width: 640px) {
   :root {
-    --header-h: 7rem;
+    --header-h: 3.25rem;
+  }
+
+  .header-inner {
+    padding-inline: var(--space-2);
+  }
+
+  .brand {
+    font-size: 1.05rem;
+    padding-inline: 0.25rem;
+  }
+
+  nav {
+    gap: 0;
+  }
+
+  .site-header nav a[data-magnetic] {
+    font-size: 0.85rem;
+    padding-inline: 0.4rem;
+  }
+}
+
+@media (max-width: 340px) {
+  :root {
+    --header-h: 5.5rem;
   }
 
   .header-inner {
@@ -761,7 +804,6 @@ a.project-card__github:hover {
   nav {
     flex-wrap: wrap;
     justify-content: center;
-    gap: var(--space-1);
   }
 }
 
@@ -812,10 +854,67 @@ html::-webkit-scrollbar {
 }
 
 .setlist__num {
+  position: relative;
   font-family: var(--font-display);
   font-weight: 800;
   color: var(--accent);
   font-variant-numeric: tabular-nums;
+}
+
+.setlist__n {
+  transition: opacity 0.2s ease;
+}
+
+.setlist__title {
+  transition: color 0.2s ease;
+}
+
+/* "Now playing" equaliser, shown in place of the track number (setlist.js) */
+.eq {
+  position: absolute;
+  left: 0;
+  top: 0.35em;
+  height: 0.95em;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.eq i {
+  width: 3px;
+  height: 100%;
+  border-radius: 1px;
+  background: var(--accent);
+  transform-origin: bottom;
+  transform: scaleY(0.3);
+}
+
+.setlist__item.is-playing .setlist__n {
+  opacity: 0;
+}
+
+.setlist__item.is-playing .eq {
+  opacity: 1;
+}
+
+.setlist__item.is-playing .setlist__title {
+  color: var(--accent);
+}
+
+.setlist__item.is-playing .eq i {
+  animation: eq 0.8s ease-in-out infinite alternate;
+}
+
+.setlist__item.is-playing .eq i:nth-child(2) { animation-duration: 0.55s; animation-delay: -0.2s; }
+.setlist__item.is-playing .eq i:nth-child(3) { animation-duration: 0.95s; animation-delay: -0.4s; }
+.setlist__item.is-playing .eq i:nth-child(4) { animation-duration: 0.65s; animation-delay: -0.1s; }
+
+@keyframes eq {
+  0% { transform: scaleY(0.25); }
+  50% { transform: scaleY(1); }
+  100% { transform: scaleY(0.45); }
 }
 
 .setlist__title {
@@ -885,14 +984,14 @@ html::-webkit-scrollbar {
 /* "Hello" left of the neck, "there" right of the body */
 .hero-text__hello {
   top: 24%;
-  right: calc(50% + clamp(3rem, 9vw, 9rem));
-  font-size: clamp(2.5rem, 8vw, 7rem);
+  right: calc(50% + clamp(2.5rem, 9vw, 9rem));
+  font-size: clamp(2.25rem, min(8vw, 13svh), 7rem);
 }
 
 .hero-text__there {
   top: 62%;
-  left: calc(50% + clamp(3rem, 9vw, 9rem));
-  font-size: clamp(2.5rem, 8vw, 7rem);
+  left: calc(50% + clamp(2.5rem, 9vw, 9rem));
+  font-size: clamp(2.25rem, min(8vw, 13svh), 7rem);
 }
 
 .hero-text__about {
@@ -901,7 +1000,7 @@ html::-webkit-scrollbar {
   left: 52%;
   translate: 0 -50%;
   width: min(44vw, 14ch);
-  font-size: clamp(2.25rem, 6vw, 5rem);
+  font-size: clamp(2rem, min(6vw, 10svh), 5rem);
 }
 
 /* Bio sits beside the docked guitar (gutter is 0 on narrow screens) */
@@ -910,7 +1009,299 @@ html::-webkit-scrollbar {
   translate: 0 -50%;
   left: calc(var(--guitar-gutter, 0px) + var(--space-5));
   right: var(--space-5);
-  max-width: 22ch;
-  font-size: clamp(2rem, 4.5vw, 4rem);
+  max-width: 24ch;
+  font-size: clamp(1.5rem, min(4.2vw, 7.5svh), 3.75rem);
   line-height: 1.05;
+}
+
+/* Each line of hero text sits on a faint five-line staff: the bottom line is the
+   baseline, the top line the cap height. Repeats per line box (1lh). */
+.hero-text__line::before {
+  --t: calc((1lh - 1em) / 2 + 0.16em); /* top staff line, from the top of a line box */
+  --s: 0.175em;                         /* gap between staff lines */
+  content: '';
+  position: absolute;
+  inset: 0 -0.5em;
+  z-index: -1;
+  opacity: 0.2;
+  background-image: linear-gradient(to bottom,
+      transparent 0 var(--t),
+      currentColor var(--t) calc(var(--t) + 1px),
+      transparent calc(var(--t) + 1px) calc(var(--t) + var(--s)),
+      currentColor calc(var(--t) + var(--s)) calc(var(--t) + var(--s) + 1px),
+      transparent calc(var(--t) + var(--s) + 1px) calc(var(--t) + 2 * var(--s)),
+      currentColor calc(var(--t) + 2 * var(--s)) calc(var(--t) + 2 * var(--s) + 1px),
+      transparent calc(var(--t) + 2 * var(--s) + 1px) calc(var(--t) + 3 * var(--s)),
+      currentColor calc(var(--t) + 3 * var(--s)) calc(var(--t) + 3 * var(--s) + 1px),
+      transparent calc(var(--t) + 3 * var(--s) + 1px) calc(var(--t) + 4 * var(--s)),
+      currentColor calc(var(--t) + 4 * var(--s)) calc(var(--t) + 4 * var(--s) + 1px),
+      transparent calc(var(--t) + 4 * var(--s) + 1px));
+  background-size: 100% 1lh;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 0.6em, #000 calc(100% - 0.6em), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 0.6em, #000 calc(100% - 0.6em), transparent);
+}
+
+/* ── Music staves behind each section (theme texture, see themes.css) ─── */
+main section:not(.hero) {
+  position: relative;
+  isolation: isolate;
+}
+
+main section:not(.hero)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--staves);
+  background-position: 0 2rem;
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, #000 35%, transparent 100%);
+}
+
+/* ── Vinyl grooves behind the guitar; scene.js moves and scales it with the guitar ── */
+.vinyl {
+  --groove: color-mix(in srgb, var(--ink) 9%, transparent);
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: -3; /* under the hero text (-2) and guitar canvas (-1) */
+  width: min(88svh, 96vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  background:
+    radial-gradient(circle, var(--paper) 0 1.2%, transparent 1.4%),                                         /* spindle hole */
+    radial-gradient(circle, color-mix(in srgb, var(--accent) 18%, var(--paper)) 0 13%, transparent 13.3%), /* label */
+    repeating-radial-gradient(circle, var(--groove) 0 1px, transparent 1px 5px);                           /* grooves */
+  -webkit-mask-image: radial-gradient(circle, #000 58%, transparent 71%);
+  mask-image: radial-gradient(circle, #000 58%, transparent 71%);
+}
+
+/* Slowly turning light catching the grooves */
+.vinyl::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg,
+      transparent 0deg,
+      color-mix(in srgb, var(--ink) 7%, transparent) 30deg,
+      transparent 70deg 180deg,
+      color-mix(in srgb, var(--ink) 7%, transparent) 210deg,
+      transparent 250deg);
+  animation: vinyl-spin 24s linear infinite;
+}
+
+@keyframes vinyl-spin {
+  to { rotate: 1turn; }
+}
+
+/* ── Hero hints: scroll cue at the top, key hint while in the hero (hero-steps.js) ── */
+.hero-hint {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  translate: -50% 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  pointer-events: none;
+  font: 500 0.7rem var(--font-label);
+  text-transform: var(--label-case);
+  letter-spacing: var(--label-tracking);
+  color: var(--text-dim);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.in-hero .hero-hint {
+  opacity: 1;
+}
+
+.hero-hint__scroll {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  transition: opacity 0.4s ease;
+}
+
+/* A short line with a dot running down it */
+.hero-hint__scroll::after {
+  content: '';
+  width: 1px;
+  height: 28px;
+  background:
+    linear-gradient(var(--accent), var(--accent)) 0 0 / 1px 8px no-repeat,
+    var(--line);
+  animation: scroll-cue 1.6s ease-in-out infinite;
+}
+
+@keyframes scroll-cue {
+  from { background-position: 0 -8px, 0 0; }
+  to { background-position: 0 28px, 0 0; }
+}
+
+html:not(.hero-top) .hero-hint__scroll {
+  opacity: 0;
+}
+
+.hero-hint__keys {
+  display: none;
+  transition: opacity 0.4s ease;
+}
+
+.has-played .hero-hint__keys {
+  opacity: 0;
+}
+
+.hero-hint kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0.1em 0.35em;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font: inherit;
+  text-align: center;
+  color: var(--text);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero-hint__keys {
+    display: block;
+  }
+}
+
+/* ── Guitar-pick cursor (cursor.js, mouse only) ─── */
+html.has-pick,
+html.has-pick * {
+  cursor: none !important;
+}
+
+.pick-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  transform-origin: 12px 23px; /* the tip */
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  will-change: transform;
+}
+
+.pick-cursor.is-visible {
+  opacity: 1;
+}
+
+.pick-cursor svg {
+  display: block;
+  overflow: visible;
+  transform-origin: 50% 95.8%;
+  filter: drop-shadow(0 2px 3px rgb(var(--shadow-rgb) / 0.35));
+  transition: scale 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pick-cursor path {
+  fill: var(--accent);
+  stroke: var(--paper);
+  stroke-width: 1.4;
+}
+
+.pick-cursor.is-hover svg { scale: 1.35; }
+.pick-cursor.is-down svg { scale: 0.85; }
+.pick-cursor.is-hover.is-down svg { scale: 1.15; }
+
+/* ── Responsive tuning ─────────────────────────────────────────────────── */
+
+/* Tablets / narrow windows where the guitar fades out instead of docking */
+@media (max-width: 900px) {
+  .hero-text__about {
+    left: 48%;
+    width: min(46vw, 15ch);
+  }
+
+  .hero-text__bio {
+    left: var(--space-5);
+    right: var(--space-5);
+    margin-inline: auto;
+  }
+}
+
+/* Phones (portrait): the guitar is narrow and slides left for "about", so the
+   text takes the right half; the bio uses the full width once the guitar fades. */
+@media (max-width: 640px) {
+  .hero-text__hello {
+    right: calc(50% + clamp(1.5rem, 6vw, 2.75rem));
+    font-size: clamp(1.75rem, 8.5vw, 2.75rem);
+  }
+
+  .hero-text__there {
+    left: calc(50% + clamp(2rem, 10vw, 3.25rem));
+    font-size: clamp(1.75rem, 8.5vw, 2.75rem);
+  }
+
+  .hero-text__about {
+    left: 48%;
+    width: calc(52% - var(--space-3));
+    font-size: clamp(1.35rem, 6.2vw, 2.1rem);
+  }
+
+  .hero-text__bio {
+    left: var(--space-4);
+    right: var(--space-4);
+    max-width: 24ch;
+    font-size: clamp(1.4rem, 6.5vw, 2.2rem);
+  }
+
+  .hero-hint {
+    bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); /* clear of the theme button */
+  }
+
+  .theme-switch {
+    right: var(--space-2);
+    bottom: calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
+    min-height: 40px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.7rem;
+  }
+
+  .contact-links a {
+    flex: 1 1 calc(50% - var(--space-3));
+    justify-content: center;
+  }
+}
+
+/* Short landscape screens (phones on their side): less vertical padding. */
+@media (max-height: 500px) and (orientation: landscape) {
+  section {
+    padding-block: var(--space-5);
+  }
+
+  .intro {
+    min-height: auto;
+  }
+
+  .hero-hint {
+    bottom: var(--space-2);
+  }
+
+  .hero-hint__keys {
+    display: none;
+  }
+}
+
+/* Very wide screens: let the content breathe a little more. */
+@media (min-width: 1600px) {
+  :root {
+    --max-width: 1240px;
+  }
 }

@@ -3,8 +3,17 @@
    Each sets the palette roles used in style.css, fonts, and a background texture.
    The texture sits on <body>, so it scrolls with the page rather than staying fixed. */
 
-/* Fine film grain, reused by both themes at different strengths. */
+/* Fine film grain, reused by both themes at different strengths, plus long
+   paper fibres (stretched noise) for a tactile, printed-sheet feel. */
 :root {
+  --fibre: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006 0.22' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 2.2 -0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  /* Five-line music staves, one every 168px; used behind sections (style.css). */
+  --staves: repeating-linear-gradient(to bottom,
+      var(--staff-ink) 0 1px, transparent 1px 10px,
+      var(--staff-ink) 10px 11px, transparent 11px 20px,
+      var(--staff-ink) 20px 21px, transparent 21px 30px,
+      var(--staff-ink) 30px 31px, transparent 31px 40px,
+      var(--staff-ink) 40px 41px, transparent 41px 168px);
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -28,9 +37,11 @@
   --label-case: uppercase;
   --label-tracking: 0.18em;
 
-  --texture: var(--grain);
-  --texture-opacity: 0.07;
-  --texture-size: 180px;
+  --texture: var(--grain), var(--fibre);
+  --texture-opacity: 0.11;
+  --texture-size: 180px, 420px;
+  --staff-ink: color-mix(in srgb, var(--ink) 7%, transparent);
+  --vignette: rgb(0 0 0 / 0.55);
 }
 
 /* ── Studio / analog: paper and charcoal, burnt orange, mono labels, ruled lines ── */
@@ -53,11 +64,12 @@
   --label-case: uppercase;
   --label-tracking: 0.08em;
 
-  /* Grain plus faint horizontal rules, like a notebook / tape sheet. */
-  --texture: var(--grain),
-    repeating-linear-gradient(to bottom, transparent 0 31px, color-mix(in srgb, var(--ink) 5%, transparent) 31px 32px);
-  --texture-opacity: 0.1;
-  --texture-size: 180px, auto;
+  /* Grain plus paper fibres, like a heavy notebook / tape sheet. */
+  --texture: var(--grain), var(--fibre);
+  --texture-opacity: 0.16;
+  --texture-size: 180px, 420px;
+  --staff-ink: color-mix(in srgb, var(--ink) 9%, transparent);
+  --vignette: rgb(var(--shadow-rgb) / 0.16);
 }
 
 [data-theme='studio'] h1,
@@ -82,6 +94,16 @@ body::before {
   background-image: var(--texture);
   background-size: var(--texture-size);
   opacity: var(--texture-opacity);
+}
+
+/* Soft vignette: edges of the screen fall off slightly, like a lit sheet of paper. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  background: radial-gradient(ellipse 120% 100% at 50% 45%, transparent 55%, var(--vignette) 100%);
 }
 
 /* Temporary theme switcher, for choosing between the two. */
