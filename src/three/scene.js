@@ -1,4 +1,4 @@
-import { STORY } from '../story.js'
+import { STORY, storyUnit } from '../story.js'
 import {
     WebGLRenderer, Scene, PerspectiveCamera,
     AmbientLight, DirectionalLight,
@@ -15,15 +15,16 @@ const smoothstep = (t) => t * t * (3 - 2 * t)
 // Width of the left margin reserved for the docked guitar. Zero on narrow
 // screens, where the guitar fades out after the hero instead of docking.
 const NARROW_BREAKPOINT = 900
-function gutterPx() {
-    if (window.innerWidth < NARROW_BREAKPOINT) return 0
-    return Math.min(260, Math.max(150, window.innerWidth * 0.14))
+function gutterPx(w = window.innerWidth) {
+    if (w < NARROW_BREAKPOINT) return 0
+    return Math.min(260, Math.max(150, w * 0.14))
 }
 
 
-export function initHero(container, { onPluck } = {}) {
+export function initHero(container, { onPluck, vinyl } = {}) {
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
     const root = document.documentElement
 
     // ── Renderer ──────────────────────────────────────────────────────────────
@@ -111,7 +112,7 @@ export function initHero(container, { onPluck } = {}) {
     // Docked x (world units) puts the guitar's centre in the middle of the left
     // gutter; docked scale keeps its width inside the gutter.
     function computeDock(w, h) {
-        const gutter = gutterPx()
+        const gutter = gutterPx(w)
         root.style.setProperty('--guitar-gutter', `${gutter}px`)
 
         dock.active = gutter > 0
@@ -133,14 +134,17 @@ export function initHero(container, { onPluck } = {}) {
         dock.scale = Math.min(0.95, (0.46 * gutter) / (extent * pxPerUnit))
     }
 
+    computeDock(container.clientWidth, container.clientHeight)
+
     // ── Scroll progress ───────────────────────────────────────────────────────
     let progress = 0   // eased value actually used for the pose
     let target = 0     // real value from scrollY
     let shift = 0, shiftTarget = 0 // part-way slide left for the "about" line
     const SHIFT_NDC = -0.42        // guitar centre at ~29% of viewport width
+    const FOLLOW = 0.14            // per-frame easing of the pose toward the scroll position
     const readScroll = () => {
         // Guitar only moves inside the STORY dock window (see story.js).
-        const s = window.scrollY / window.innerHeight
+        const s = window.scrollY / storyUnit()
         target = clamp01((s - STORY.dockFrom) / (STORY.dockTo - STORY.dockFrom))
         shiftTarget = clamp01((s - STORY.shiftFrom) / (STORY.shiftTo - STORY.shiftFrom))
     }
@@ -173,21 +177,46 @@ export function initHero(container, { onPluck } = {}) {
     })
 
     let overString = false
+    // Cursor position in -1..1, for the guitar leaning toward it in the hero.
+    const lean = { x: 0, y: 0, tx: 0, ty: 0 }
     window.addEventListener('pointermove', (e) => {
         const over = !!getHit(e)
         if (over !== overString) {
             overString = over
             root.style.cursor = over ? 'pointer' : ''
+            root.classList.toggle('is-over-string', over) // read by the pick cursor
+        }
+        if (finePointer && e.pointerType === 'mouse') {
+            lean.tx = (e.clientX / window.innerWidth) * 2 - 1
+            lean.ty = (e.clientY / window.innerHeight) * 2 - 1
         }
     }, { passive: true })
+    document.documentElement.addEventListener('mouseleave', () => { lean.tx = 0; lean.ty = 0 })
+
+    // Vinyl rings (DOM, behind the canvas) follow the guitar's centre on screen.
+    let lastVinyl = ''
+    function placeVinyl(e, opacity) {
+        if (!vinyl) return
+        const halfH = Math.tan((camera.fov * Math.PI / 180) / 2) * camera.position.z
+        const pxPerUnit = container.clientHeight / (2 * halfH)
+        const x = pivot.position.x * pxPerUnit
+        // Shrink and dim behind the docked guitar so it stays inside the left gutter.
+        const scale = pivot.scale.x * lerp(1, 0.36, e)
+        const o = opacity * lerp(1, 0.28, e)
+        const key = `${x.toFixed(1)}|${scale.toFixed(3)}|${o.toFixed(3)}`
+        if (key === lastVinyl) return
+        lastVinyl = key
+        vinyl.style.transform = `translate(-50%, -50%) translateX(${x.toFixed(1)}px) scale(${scale.toFixed(3)})`
+        vinyl.style.opacity = o.toFixed(3)
+    }
 
     // ── Animation loop ────────────────────────────────────────────────────────
     let lastKey = ''
     function frame() {
-        progress = reduceMotion ? target : progress + (target - progress) * 0.1
+        progress = reduceMotion ? target : progress + (target - progress) * FOLLOW
         if (Math.abs(target - progress) < 0.0005) progress = target
 
-        shift = reduceMotion ? shiftTarget : shift + (shiftTarget - shift) * 0.1
+        shift = reduceMotion ? shiftTarget : shift + (shiftTarget - shift) * FOLLOW
         if (Math.abs(shiftTarget - shift) < 0.0005) shift = shiftTarget
 
         const e = smoothstep(progress)
@@ -200,6 +229,7 @@ export function initHero(container, { onPluck } = {}) {
         // On narrow screens the guitar fades out after the hero instead of docking.
         const opacity = dock.active ? 1 : 1 - e
         container.style.opacity = opacity.toFixed(3)
+        placeVinyl(e, opacity)
 
         // String shake + glow, decaying over VIB_MS. Reduced motion: glow only.
         const now = performance.now()
@@ -223,7 +253,12 @@ export function initHero(container, { onPluck } = {}) {
 
         if (!reduceMotion) {
             const t = performance.now() / 1000
-            pivot.rotation.y = Math.sin(t * 0.6) * lerp(HERO_SWAY, DOCK_SWAY, e)
+            // Lean toward the cursor in the hero only; none once docked.
+            lean.x += (lean.tx - lean.x) * 0.05
+            lean.y += (lean.ty - lean.y) * 0.05
+            const leanK = 1 - e
+            pivot.rotation.y = Math.sin(t * 0.6) * lerp(HERO_SWAY, DOCK_SWAY, e) + lean.x * 0.35 * leanK
+            pivot.rotation.x = lean.y * 0.2 * leanK
         } else {
             // Nothing is animating except scroll, so skip identical frames.
             const key = `${e.toFixed(4)}|${shift.toFixed(4)}|${renderer.domElement.width}|${renderer.domElement.height}`
@@ -247,13 +282,26 @@ export function initHero(container, { onPluck } = {}) {
         camera.updateProjectionMatrix()
         fitCamera()                 // recalculate distance for new aspect ratio
         computeDock(w, h)           // recalculate the docked pose for the new viewport
+        readScroll()                // the story unit follows the hero's height
         lastKey = ''
+        lastVinyl = ''
     }
     new ResizeObserver(resize).observe(container)
     // Re-render after a theme swap (matters when reduced motion skips frames).
     window.addEventListener('guitar-theme', () => { lastKey = '' })
 
     return {
+        // True while the guitar is still easing toward its target pose.
+        moving() {
+            return Math.abs(target - progress) > 0.004 || Math.abs(shiftTarget - shift) > 0.004
+        },
+        // Jump straight to the pose for the current scroll position (skip easing).
+        snap() {
+            readScroll()
+            progress = target
+            shift = shiftTarget
+            lastKey = ''
+        },
         // Shake and glow one string (0 = low E … 5 = high E).
         vibrate(index) {
             const v = vib[index]
