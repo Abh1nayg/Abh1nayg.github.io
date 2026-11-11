@@ -1,4 +1,5 @@
 import { experience } from './data/experience.js'
+import { pluck, canPlay } from './audio/pluck.js'
 
 // Builds "The Setlist": experience (work, education, activities) and certifications,
 // numbered like tracks.
@@ -12,6 +13,28 @@ export function initSetlist() {
   ].filter((g) => g.items.length)
 
   root.replaceChildren(...groups.map(buildGroup))
+  initNowPlaying(root)
+}
+
+// Hovering a track plays a soft note and swaps its number for a little
+// equaliser. Notes walk down the strings, high E first.
+function initNowPlaying(root) {
+  const items = [...root.querySelectorAll('.setlist__item')]
+  // pointerenter also fires when the page scrolls under a still cursor, so only
+  // count it as a hover if the mouse actually moved just now.
+  let lastMove = 0
+  window.addEventListener('pointermove', () => { lastMove = performance.now() }, { passive: true })
+
+  items.forEach((li, i) => {
+    li.addEventListener('pointerenter', (e) => {
+      if (e.pointerType !== 'mouse') return
+      li.classList.add('is-playing')
+      if (performance.now() - lastMove < 120 && canPlay()) pluck(5 - (i % 6), { gain: 0.1 })
+    })
+    li.addEventListener('pointerleave', () => li.classList.remove('is-playing'))
+    li.addEventListener('focusin', () => li.classList.add('is-playing'))
+    li.addEventListener('focusout', () => li.classList.remove('is-playing'))
+  })
 }
 
 function el(tag, className, text) {
@@ -34,8 +57,13 @@ function buildGroup({ heading, items }) {
 
 function buildItem(item, i) {
   const li = el('li', 'setlist__item')
-  li.append(el('span', 'setlist__num', String(i + 1).padStart(2, '0')))
-  li.lastChild.setAttribute('aria-hidden', 'true')
+  const num = el('span', 'setlist__num')
+  num.setAttribute('aria-hidden', 'true')
+  num.append(el('span', 'setlist__n', String(i + 1).padStart(2, '0')))
+  const eq = el('span', 'eq')
+  for (let b = 0; b < 4; b++) eq.append(el('i'))
+  num.append(eq)
+  li.append(num)
 
   const body = el('div')
   body.append(el('p', 'setlist__title', item.title))
